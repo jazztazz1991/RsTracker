@@ -45,11 +45,15 @@ function questURL(username) {
 }
 
 // profile route
-router.get('/', async (req, res) => {
+router.get('/profile/:username', async (req, res) => {
     try {
-        const response = await fetch(profileURL(req.body.username), { method: 'GET' })
+        const response = await fetch(profileURL(req.params.username), {
+            method: 'GET',
+            headers: {
+            }
+        })
         const profile = await response.json();
-
+        console.log(profile)
         res.json(profile)
     } catch (err) {
         res.status(400).json(err);

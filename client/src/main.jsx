@@ -1,11 +1,11 @@
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import App from './App.jsx';
 import Landing from './pages/landing.jsx';
 import Profile from './pages/profile.jsx';
-import './index.css';
+import Runemetrics from './pages/runemetrics.jsx';
+import Team from './pages/team.jsx';
 
 const router = createBrowserRouter([
 	{
@@ -20,6 +20,14 @@ const router = createBrowserRouter([
 			{
 				path: '/profile',
 				element: <Profile />,
+			},
+			{
+				path: '/runemetrics',
+				element: <Runemetrics />,
+			},
+			{
+				path: '/team',
+				element: <Team />,
 			},
 		],
 	},

@@ -45,7 +45,7 @@ function questURL(username) {
     return `https://apps.runescape.com/runemetrics/quests?user=${username}`
 }
 
-router.get('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const teamMembers = req.body.members;
         let teamData = []
@@ -67,12 +67,12 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/getTopSkills', async (req, res) => {
+router.post('/getTopSkills', async (req, res) => {
     try {
         const teamMembers = req.body.members;
         const teamData = [];
         const topSkills = [];
-
+        console.log(teamMembers)
         //add name of skill to skill object then pushing user data to teamData
         for (let i = 0; i < teamMembers.length; i++) {
             const response = await fetch(profileURL(teamMembers[i]), { method: 'GET' })
