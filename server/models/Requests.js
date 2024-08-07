@@ -1,10 +1,10 @@
+
 const { Model, DataTypes } = require('sequelize');
-const bcrypt = require('bcrypt');
 const sequelize = require('../config/connection');
 
-class Team extends Model { }
+class Request extends Model { }
 
-Team.init(
+Request.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -12,7 +12,11 @@ Team.init(
             primaryKey: true,
             autoIncrement: true
         },
-        teamName: {
+        request: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        requestedBy: {
             type: DataTypes.STRING,
             allowNull: false
         }
@@ -25,4 +29,4 @@ Team.init(
     }
 );
 
-module.exports = Team;
+module.exports = Request;
