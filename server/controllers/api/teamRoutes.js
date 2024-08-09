@@ -45,7 +45,7 @@ function questURL(username) {
     return `https://apps.runescape.com/runemetrics/quests?user=${username}`
 }
 
-router.post('/', async (req, res) => {
+router.post('/', withAuth, async (req, res) => {
     try {
         const teamMembers = req.body.members;
         let teamData = []
@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.post('/getTopSkills', async (req, res) => {
+router.post('/getTopSkills', withAuth, async (req, res) => {
     try {
         const teamMembers = req.body.members;
         const teamData = [];
@@ -109,7 +109,7 @@ router.post('/getTopSkills', async (req, res) => {
     }
 })
 
-router.get('/allQuests', async (req, res) => {
+router.post('/allQuests', withAuth, async (req, res) => {
     try {
         const teamMembers = req.body.members;
         const teamData = [];

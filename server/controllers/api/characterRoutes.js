@@ -80,7 +80,7 @@ router.get('/profile/:username', async (req, res) => {
 });
 
 //quest routes
-router.get('/allQuests', async (req, res) => {
+router.post('/allQuests', async (req, res) => {
     try {
         const response = await fetch(questURL(req.body.username), { method: 'GET' })
         const data = await response.json();
@@ -91,7 +91,7 @@ router.get('/allQuests', async (req, res) => {
         res.status(400).json(err);
     }
 });
-router.get('/incompleteQuests', async (req, res) => {
+router.post('/incompleteQuests', async (req, res) => {
     try {
         const response = await fetch(questURL(req.body.username), { method: 'GET' })
         const data = await response.json();
@@ -109,7 +109,7 @@ router.get('/incompleteQuests', async (req, res) => {
         res.status(400).json(err);
     }
 });
-router.get('/completedQuests', async (req, res) => {
+router.post('/completedQuests', async (req, res) => {
     try {
         const response = await fetch(questURL(req.body.username), { method: 'GET' })
         const data = await response.json();
@@ -127,7 +127,7 @@ router.get('/completedQuests', async (req, res) => {
 });
 
 // skill routes
-router.get('/allSkills', async (req, res) => {
+router.post('/allSkills', async (req, res) => {
     try {
         const response = await fetch(profileURL(req.body.username), { method: 'GET' })
         const profile = await response.json();
@@ -143,7 +143,7 @@ router.get('/allSkills', async (req, res) => {
         res.status(400).json(err);
     }
 });
-router.get('/skill/:skill', async (req, res) => {
+router.post('/skill/:skill', async (req, res) => {
     try {
         const response = await fetch(profileURL(req.body.username), { method: 'GET' })
         const profile = await response.json();
@@ -174,7 +174,7 @@ router.get('/skill/:skill', async (req, res) => {
     }
 });
 
-router.get('/avatar', async (req, res) => {
+router.post('/avatar', async (req, res) => {
     try {
         miscellaneous.getAvatar(req.body.username).then((data) => {
             res.json(data)
