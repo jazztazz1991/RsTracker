@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Character } = require('../../models');
+const { Character, Team } = require('../../models');
 const withAuth = require('../../utils/auth');
 const { runemetrics, hiscores, miscellaneous } = require('runescape-api');
 const fetch = require('node-fetch')
@@ -45,7 +45,7 @@ function questURL(username) {
     return `https://apps.runescape.com/runemetrics/quests?user=${username}`
 }
 
-router.post('/', async (req, res) => {
+router.post('/', withAuth, async (req, res) => {
     try {
         const teamMembers = req.body.members;
         let teamData = []
@@ -63,11 +63,11 @@ router.post('/', async (req, res) => {
         res.json(teamData)
     } catch (err) {
         console.log(err);
-        res.status(400).json(err);
+        res.status(500).json(err);
     }
 })
 
-router.post('/getTopSkills', async (req, res) => {
+router.post('/getTopSkills', withAuth, async (req, res) => {
     try {
         const teamMembers = req.body.members;
         const teamData = [];
@@ -105,11 +105,11 @@ router.post('/getTopSkills', async (req, res) => {
         res.json(topSkills)
     } catch (err) {
         console.log(err);
-        res.status(400).json(err);
+        res.status(500).json(err);
     }
 })
 
-router.get('/allQuests', async (req, res) => {
+router.post('/allQuests', withAuth, async (req, res) => {
     try {
         const teamMembers = req.body.members;
         const teamData = [];
@@ -142,7 +142,18 @@ router.get('/allQuests', async (req, res) => {
         res.json(teamQuests)
     } catch (err) {
         console.log(err);
-        res.status(400).json(err);
+        res.status(500).json(err);
+    }
+})
+
+router.post('/createTeam', async (req, res) => {
+    try {
+        const teamName = req.body.teamName;
+        const response = await Team.create({ teamName })
+        res.json(response)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err)
     }
 })
 
