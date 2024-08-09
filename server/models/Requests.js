@@ -25,7 +25,7 @@ Request.init(
         sequelize,
         freezeTableName: true,
         underscored: true,
-        modelName: 'team'
+        modelName: 'request'
     }
 );
 

@@ -2,6 +2,7 @@ const router = require('express').Router();
 const { Character } = require('../../models');
 const withAuth = require('../../utils/auth');
 const { runemetrics, hiscores, miscellaneous } = require('runescape-api');
+
 const fetch = require('node-fetch')
 
 const skillNames = [
@@ -47,14 +48,32 @@ function questURL(username) {
 // profile route
 router.get('/profile/:username', async (req, res) => {
     try {
-        const response = await fetch(profileURL(req.params.username), {
-            method: 'GET',
-            headers: {
-            }
+        const lowerUsername = req.params.username.toLowerCase();
+        const dbResponse = await Character.findOne({
+            where: { lowername: lowerUsername }
         })
-        const profile = await response.json();
-        console.log(profile)
-        res.json(profile)
+        if (!dbResponse) {
+            const response = await fetch(profileURL(lowerUsername), {
+                method: 'GET',
+                headers: {
+                }
+            })
+            const profile = await response.json();
+            const skillIds = profile.skillvalues
+            const skills = [];
+            for (let i = 0; i < skillNames.length; i++) {
+                skillIds[i].name = skillNames[skillIds[i].id]
+                skills.push(skillIds[i])
+            }
+            profile.skillvalues = skills
+            const lowerName = profile.name.toLowerCase();
+            const createChar = await Character.create({ ...profile, lowername: lowerName })
+
+            res.json(profile)
+        } else {
+            res.json(dbResponse)
+        }
+
     } catch (err) {
         res.status(400).json(err);
     }

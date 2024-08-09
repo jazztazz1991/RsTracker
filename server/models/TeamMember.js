@@ -21,7 +21,7 @@ TeamMember.init(
         sequelize,
         freezeTableName: true,
         underscored: true,
-        modelName: 'team'
+        modelName: 'teamMember'
     }
 );
 

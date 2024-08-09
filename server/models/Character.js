@@ -15,19 +15,19 @@ Character.init(
         magic: {
             type: DataTypes.INTEGER
         },
-        questsStarted: {
+        questsstarted: {
             type: DataTypes.INTEGER
         },
-        totalSkill: {
+        totalskill: {
             type: DataTypes.INTEGER
         },
-        questsComplete: {
+        questscomplete: {
             type: DataTypes.INTEGER
         },
-        questsNotStarted: {
+        questsnotstarted: {
             type: DataTypes.INTEGER
         },
-        totalXp: {
+        totalxp: {
             type: DataTypes.INTEGER
         },
         ranged: {
@@ -36,23 +36,26 @@ Character.init(
         melee: {
             type: DataTypes.INTEGER
         },
-        combatLevel: {
+        combatlevel: {
             type: DataTypes.INTEGER
         },
         name: {
             type: DataTypes.STRING
         },
+        lowername: {
+            type: DataTypes.STRING
+        },
         rank: {
             type: DataTypes.STRING
         },
-        loggedIn: {
+        loggedin: {
             type: DataTypes.BOOLEAN
         },
         // Assuming activities and skillValues are stored as JSON
         activities: {
             type: DataTypes.JSON
         },
-        skillValues: {
+        skillvalues: {
             type: DataTypes.JSON
         }
     },
@@ -60,7 +63,7 @@ Character.init(
         sequelize,
         freezeTableName: true,
         underscored: true,
-        modelName: 'team'
+        modelName: 'character'
     }
 );
 
