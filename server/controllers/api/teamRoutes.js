@@ -45,20 +45,36 @@ function questURL(username) {
     return `https://apps.runescape.com/runemetrics/quests?user=${username}`
 }
 
-router.post('/', withAuth, async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const teamMembers = req.body.members;
-        let teamData = []
-        // teamMembers.forEach(async (member) => {
-        //     const response = await fetch(profileURL(member), { method: 'GET' })
-        //     const data = await response.json();
-        //     console.log(data.name)
-        //     teamData.members.push(data.name)
-        // })
+        let teamData = [];
         for (let i = 0; i < teamMembers.length; i++) {
-            const response = await fetch(profileURL(teamMembers[i]), { method: 'GET' })
-            const data = await response.json();
-            teamData.push(data)
+            const lowerUsername = teamMembers[i].toLowerCase();
+            const dbResponse = await Character.findOne({
+                where: { lowername: lowerUsername }
+            })
+            if (!dbResponse) {
+                const response = await fetch(profileURL(lowerUsername), {
+                    method: 'GET',
+                    headers: {
+                    }
+                })
+                const profile = await response.json();
+                const skillIds = profile.skillvalues
+                const skills = [];
+                for (let i = 0; i < skillNames.length; i++) {
+                    skillIds[i].name = skillNames[skillIds[i].id]
+                    skills.push(skillIds[i])
+                }
+                profile.skillvalues = skills
+                const lowerName = profile.name.toLowerCase();
+                const createChar = await Character.create({ ...profile, lowername: lowerName })
+                teamData.push(profile)
+            } else {
+                teamData.push(dbResponse)
+            }
+
         }
         res.json(teamData)
     } catch (err) {
@@ -67,7 +83,7 @@ router.post('/', withAuth, async (req, res) => {
     }
 })
 
-router.post('/getTopSkills', withAuth, async (req, res) => {
+router.post('/getTopSkills', async (req, res) => {
     try {
         const teamMembers = req.body.members;
         const teamData = [];
@@ -75,16 +91,20 @@ router.post('/getTopSkills', withAuth, async (req, res) => {
         console.log(teamMembers)
         //add name of skill to skill object then pushing user data to teamData
         for (let i = 0; i < teamMembers.length; i++) {
-            const response = await fetch(profileURL(teamMembers[i]), { method: 'GET' })
-            const data = await response.json();
-            const skillIds = data.skillvalues
+            const lower = teamMembers[i].toLowerCase()
+            const response = await Character.findOne({
+                where: { lowername: lower }
+            })
+            console.log(response)
+            const profile = response.dataValues
+            const skillIds = profile.skillvalues
             const skills = [];
             for (let i = 0; i < skillNames.length; i++) {
                 skillIds[i].name = skillNames[skillIds[i].id]
                 skills.push(skillIds[i])
             }
-            data.skillvalues = skills
-            teamData.push(data)
+            profile.skillvalues = skills
+            teamData.push(profile)
         }
 
         // looping through all team members skills and pushing the highest xp to topSkills

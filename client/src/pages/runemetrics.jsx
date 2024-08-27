@@ -63,7 +63,6 @@ const Runemetrics = () => {
 								<h3>
 									{skill.name}: {skill.level}
 								</h3>
-							
 							</div>
 						))}
 					</div>

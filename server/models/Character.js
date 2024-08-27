@@ -13,13 +13,13 @@ Character.init(
             autoIncrement: true
         },
         magic: {
-            type: DataTypes.INTEGER
+            type: DataTypes.BIGINT
         },
         questsstarted: {
             type: DataTypes.INTEGER
         },
         totalskill: {
-            type: DataTypes.INTEGER
+            type: DataTypes.BIGINT
         },
         questscomplete: {
             type: DataTypes.INTEGER
@@ -28,13 +28,13 @@ Character.init(
             type: DataTypes.INTEGER
         },
         totalxp: {
-            type: DataTypes.INTEGER
+            type: DataTypes.BIGINT
         },
         ranged: {
-            type: DataTypes.INTEGER
+            type: DataTypes.BIGINT
         },
         melee: {
-            type: DataTypes.INTEGER
+            type: DataTypes.BIGINT
         },
         combatlevel: {
             type: DataTypes.INTEGER
