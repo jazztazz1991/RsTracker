@@ -3,20 +3,31 @@ import { Link, useNavigate } from 'react-router-dom';
 import '../index.css';
 import instance from '../hooks/API';
 import addNames from '../hooks/getSkillNames';
+import useCheckAuth from '../hooks/auth';
 
 const Runemetrics = () => {
 	const [username, setUsername] = useState();
 	const [profile, setProfile] = useState();
 	const [userSkills, setUserSkills] = useState([]);
+	const navigate = useNavigate();
+	const auth = useCheckAuth();
 
 	useEffect(() => {
-		let account = profile;
 		if (profile) {
 			let skills = addNames(profile.skillvalues);
 			setUserSkills(skills);
 			console.log(skills);
 		}
 	}, [profile]);
+
+	useEffect(() => {
+		console.log('checking auth');
+		if (!auth) {
+			navigate('/auth');
+		} else {
+			console.log('authed');
+		}
+	}, []);
 	const handleChange = (event) => {
 		const { name, value } = event.target;
 		setUsername(value);

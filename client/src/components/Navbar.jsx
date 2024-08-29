@@ -1,13 +1,27 @@
 import { Link } from 'react-router-dom';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import instance from '../hooks/API';
+import { useCookies } from 'react-cookie';
+import { useEffect } from 'react';
 
 const Navbar = () => {
+	const [cookies, removeCookie] = useCookies(['token', 'user']);
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		console.log(cookies);
+		if (cookies.token === 'undefined' || !cookies.token) {
+			console.log('true');
+			navigate('/auth');
+		}
+	}, []);
 	const logout = async () => {
 		try {
 			const response = await instance.post('/api/users/logout');
+			removeCookie('token');
+			removeCookie('user');
 			console.log(response);
-			redirect('/');
+			navigate('/auth');
 		} catch (err) {
 			console.log(err);
 		}
@@ -18,22 +32,24 @@ const Navbar = () => {
 				<h1>RsTracker</h1>
 			</div>
 			<div className='m-8 flex items-center justify-center gap-4 text-xl'>
-				{}
-				<Link to='/auth' className='rounded bg-slate-600 p-2'>
-					Login/Register
-				</Link>
-				<Link to='/profile' className='rounded bg-slate-600 p-2'>
-					Profile
-				</Link>
-				<Link to='/team' className='rounded bg-slate-600 p-2'>
-					Team
-				</Link>
-				<Link to='/runemetrics' className='rounded bg-slate-600 p-2'>
-					Runemetrics
-				</Link>
-				<button className='rounded bg-slate-600 p-2' onClick={logout}>
-					Logout
-				</button>
+				{cookies.token ? (
+					<>
+						<Link to='/profile' className='rounded bg-slate-600 p-2'>
+							Profile
+						</Link>
+						<Link to='/team' className='rounded bg-slate-600 p-2'>
+							Team
+						</Link>
+						<Link to='/runemetrics' className='rounded bg-slate-600 p-2'>
+							Runemetrics
+						</Link>
+						<button className='rounded bg-slate-600 p-2' onClick={logout}>
+							Logout
+						</button>
+					</>
+				) : (
+					<></>
+				)}
 			</div>
 		</div>
 	);

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Character } = require('../../models');
+const { Character, User } = require('../../models');
 const withAuth = require('../../utils/auth');
 const { runemetrics, hiscores, miscellaneous } = require('runescape-api');
 
@@ -46,7 +46,7 @@ function questURL(username) {
 }
 
 // profile route
-router.get('/profile/:username', async (req, res) => {
+router.get('/profile/:username', withAuth, async (req, res) => {
     try {
         const lowerUsername = req.params.username.toLowerCase();
         const dbResponse = await Character.findOne({
@@ -184,6 +184,59 @@ router.post('/avatar', async (req, res) => {
         res.status(400).json(err);
     }
 });
+
+router.post('/addAccount', withAuth, async (req, res) => {
+    try {
+        console.log('add account route hit')
+        console.log(req.body)
+        const userData = await User.findOne({
+            where: { username: req.body.username },
+        });
+        console.log(userData)
+        const response = await Character.update(
+            {
+                user_id: userData.id
+            },
+            {
+                where: { lowername: req.body.accountName.toLowerCase() }
+            }
+        );
+        if (response[0] === 0) {
+            const response = await fetch(profileURL(lowerUsername), {
+                method: 'GET',
+                headers: {
+                }
+            })
+            const profile = await response.json();
+            const skillIds = profile.skillvalues
+            const skills = [];
+            for (let i = 0; i < skillNames.length; i++) {
+                skillIds[i].name = skillNames[skillIds[i].id]
+                skills.push(skillIds[i])
+            }
+            profile.skillvalues = skills
+            const lowerName = profile.name.toLowerCase();
+            const createChar = await Character.create({ ...profile, lowername: lowerName })
+            const updateResponse = await Character.update(
+                {
+                    user_id: userData.id
+                },
+                {
+                    where: { lowername: req.body.accountName.toLowerCase() }
+                }
+            );
+
+            return res.json({ updateResponse, message: 'Account added' })
+
+        } else {
+            res.json({ message: 'Account added' })
+        }
+
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+})
 
 
 module.exports = router;

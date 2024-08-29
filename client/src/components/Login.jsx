@@ -1,12 +1,20 @@
-import { useState } from 'react';
-import { redirect } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import instance from '../hooks/API';
+import { useCookies } from 'react-cookie';
 
 const Login = () => {
+	const [cookies, setCookie] = useCookies(['token', 'user']);
 	const [username, setUsername] = useState();
 	const [password, setPassword] = useState();
 	const [error, setError] = useState('');
+	const navigate = useNavigate();
 
+	useEffect(() => {
+		if (cookies.token !== 'undefined') {
+			navigate('/');
+		}
+	}, []);
 	const handleChange = (event) => {
 		const { name, value } = event.target;
 		if (name === 'username') {
@@ -18,7 +26,7 @@ const Login = () => {
 
 	const login = async (event) => {
 		event.preventDefault();
-		console.log('registering');
+		console.log('Loging in');
 		try {
 			const user = {
 				username: username,
@@ -27,12 +35,25 @@ const Login = () => {
 			if (password && username) {
 				const response = await instance.post('/api/users/login', user);
 				console.log(response);
-				redirect('/');
+				setCookie('user', response.data.userData, { path: '/', maxAge: 3600 });
+				setCookie('token', response.data.token, { path: '/', maxAge: 3600 });
+				navigate('/');
 			} else {
 				setError('Please fill out all fields');
 			}
 		} catch (err) {
+			setError('Incorrect username or password, please try again');
 			console.log(err);
+		}
+	};
+
+	const showPassword = (event) => {
+		const { checked } = event.target;
+		const password = document.querySelector('input[name="password"]');
+		if (checked) {
+			password.type = 'text';
+		} else {
+			password.type = 'password';
 		}
 	};
 	return (
@@ -43,7 +64,11 @@ const Login = () => {
 				<label>Username</label>
 				<input type='text' name='username' onChange={handleChange} />
 				<label>Password</label>
-				<input type='password' name='password' onChange={handleChange} />
+				<div className='flex gap-4'>
+					<input type='password' name='password' onChange={handleChange} />
+					<input type='checkbox' name='showPassword' onClick={showPassword} />
+					<label>Show Password</label>
+				</div>
 				<input
 					type='submit'
 					value='submit'

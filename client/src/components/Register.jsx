@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import instance from '../hooks/API';
+import { useCookies } from 'react-cookie';
 
 const Register = () => {
+	const [cookies, setCookie] = useCookies(['token', 'user']);
 	const [username, setUsername] = useState();
 	const [password, setPassword] = useState();
 	const [confirmPassword, setConfirmPassword] = useState();
 	const [error, setError] = useState('');
+	const navigate = useNavigate();
 
 	const handleChange = (event) => {
 		const { name, value } = event.target;
@@ -30,12 +33,35 @@ const Register = () => {
 			if (password === confirmPassword) {
 				const response = await instance.post('/api/users/register', user);
 				console.log(response);
-				redirect('/');
+				setCookie('user', response.data.userData, { path: '/', maxAge: 3600 });
+				setCookie('token', response.data.token, { path: '/', maxAge: 3600 });
+				navigate('/');
 			} else {
 				setError('Please fill out all fields');
 			}
 		} catch (err) {
 			console.log(err);
+		}
+	};
+	const showPassword = (event) => {
+		const { checked } = event.target;
+		const password = document.querySelector('input[name="password"]');
+		console.log(checked);
+		console.log(password);
+		if (checked) {
+			password.type = 'text';
+		} else {
+			password.type = 'password';
+		}
+	};
+	const showConfirmPassword = (event) => {
+		const { checked } = event.target;
+		const password = document.querySelector('input[name="confirmPassword"]');
+		console.log(checked);
+		if (checked) {
+			password.type = 'text';
+		} else {
+			password.type = 'password';
 		}
 	};
 	return (
@@ -46,9 +72,30 @@ const Register = () => {
 				<label>Username</label>
 				<input type='text' name='username' onChange={handleChange} />
 				<label>Password</label>
-				<input type='password' name='password' onChange={handleChange} />
+				<div className='flex gap-4'>
+					<input
+						type='password'
+						name='password'
+						value={password}
+						onChange={handleChange}
+					/>
+					<input type='checkbox' name='showPassword' onClick={showPassword} />
+					<label>Show Password</label>
+				</div>
 				<label>Confirm Password</label>
-				<input type='password' name='confirmPassword' onChange={handleChange} />
+				<div className='flex gap-4'>
+					<input
+						type='password'
+						name='confirmPassword'
+						onChange={handleChange}
+					/>
+					<input
+						type='checkbox'
+						name='showPassword'
+						onClick={showConfirmPassword}
+					/>
+					<label>Show Password</label>
+				</div>
 				<input
 					type='submit'
 					value='submit'
