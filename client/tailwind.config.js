@@ -13,8 +13,9 @@ export default {
       colors: {
         'purple-c': '#6e57a5',
         'blue-light': '#92daf1',
-        'metric': '#071F2A',
-        'm-text': '#A9AB34'
+        'm-bg': '#071F2A',
+        'm-text': '#A9AB34',
+        'metric': '#1F2937'
       }
     },
   },

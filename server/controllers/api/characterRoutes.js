@@ -3,7 +3,8 @@ const { Character, User } = require('../../models');
 const withAuth = require('../../utils/auth');
 const { runemetrics, hiscores, miscellaneous } = require('runescape-api');
 
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
+const { getQuests } = require('runescape-api/runescape/runemetrics');
 
 const skillNames = [
     'Attack',
@@ -67,7 +68,10 @@ router.get('/profile/:username', withAuth, async (req, res) => {
             }
             profile.skillvalues = skills
             const lowerName = profile.name.toLowerCase();
-            const createChar = await Character.create({ ...profile, lowername: lowerName })
+
+            const qData = await getQuests(lowerUsername);
+            const quests = await qData.json()
+            const createChar = await Character.create({ ...profile, lowername: lowerName, quests: quests })
 
             res.json(profile)
         } else {
@@ -185,7 +189,7 @@ router.post('/avatar', async (req, res) => {
     }
 });
 
-router.post('/addAccount', withAuth, async (req, res) => {
+router.post('/addAccount', async (req, res) => {
     try {
         console.log('add account route hit')
         console.log(req.body)
@@ -193,41 +197,50 @@ router.post('/addAccount', withAuth, async (req, res) => {
             where: { username: req.body.username },
         });
         console.log(userData)
+        const lowerUsername = req.body.characterName.toLowerCase();
         const response = await Character.update(
             {
                 user_id: userData.id
             },
             {
-                where: { lowername: req.body.accountName.toLowerCase() }
+                where: { lowername: lowerUsername }
             }
         );
         if (response[0] === 0) {
-            const response = await fetch(profileURL(lowerUsername), {
+            const charResponse = await fetch(profileURL(lowerUsername), {
                 method: 'GET',
                 headers: {
                 }
             })
-            const profile = await response.json();
-            const skillIds = profile.skillvalues
-            const skills = [];
-            for (let i = 0; i < skillNames.length; i++) {
-                skillIds[i].name = skillNames[skillIds[i].id]
-                skills.push(skillIds[i])
-            }
-            profile.skillvalues = skills
-            const lowerName = profile.name.toLowerCase();
-            const createChar = await Character.create({ ...profile, lowername: lowerName })
-            const updateResponse = await Character.update(
-                {
-                    user_id: userData.id
-                },
-                {
-                    where: { lowername: req.body.accountName.toLowerCase() }
+            const profile = await charResponse.json();
+            if (profile.error) {
+                res.status(404).json({ message: 'Account not found' })
+            } else {
+                console.log(profile)
+                const skillIds = profile.skillvalues
+                const skills = [];
+                for (let i = 0; i < skillNames.length; i++) {
+                    console.log(skillIds)
+                    skillIds[i].name = skillNames[skillIds[i].id]
+                    skills.push(skillIds[i])
                 }
-            );
+                profile.skillvalues = skills
+                const lowerName = profile.name.toLowerCase();
 
-            return res.json({ updateResponse, message: 'Account added' })
+                const quests = await getQuests(lowerUsername);
+                console.log(quests)
+                const createChar = await Character.create({ ...profile, lowername: lowerName, quests: quests })
+                const updateResponse = await Character.update(
+                    {
+                        user_id: userData.id
+                    },
+                    {
+                        where: { lowername: lowerUsername }
+                    }
+                );
 
+                return res.json({ updateResponse, message: 'Account added' })
+            }
         } else {
             res.json({ message: 'Account added' })
         }
@@ -236,7 +249,25 @@ router.post('/addAccount', withAuth, async (req, res) => {
         console.log(err);
         res.status(400).json(err);
     }
-})
+});
 
+router.get('/:username', async (req, res) => {
+    try {
+        const userData = await User.findOne({
+            where: { username: req.params.username },
+        });
+        const dbResponse = await Character.findAll({
+            where: { user_id: userData.dataValues.id }
+        })
+        if (!dbResponse) {
+            res.status(404).json({ message: 'No characters found' })
+        } else {
+            res.json(dbResponse)
+        }
 
+    } catch (err) {
+        console.log(err);
+        res.status(400).json(err);
+    }
+});
 module.exports = router;

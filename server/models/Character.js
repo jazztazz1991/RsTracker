@@ -57,6 +57,9 @@ Character.init(
         },
         skillvalues: {
             type: DataTypes.JSON
+        },
+        quests: {
+            type: DataTypes.JSON
         }
     },
     {

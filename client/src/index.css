@@ -6,3 +6,7 @@ body{
     background-color: slategray;
     font-family: 'Poppins', sans-serif;
 }
+
+.questHeight{
+    height: 600px;
+}

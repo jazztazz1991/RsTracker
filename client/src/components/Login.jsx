@@ -11,7 +11,7 @@ const Login = () => {
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (cookies.token !== 'undefined') {
+		if (cookies.token !== 'undefined' && cookies.token) {
 			navigate('/');
 		}
 	}, []);
