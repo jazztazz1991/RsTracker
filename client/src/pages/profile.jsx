@@ -5,6 +5,7 @@ import Skills from '../components/Skills';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import { ChevronDownIcon } from '@heroicons/react/20/solid';
 import Quests from '../components/Quests';
+import RecentActivities from '../components/RecentActivities/RecentActivities';
 
 const Profile = () => {
 	const [cookies, setCookie] = useCookies(['token', 'user']);
@@ -170,6 +171,9 @@ const Profile = () => {
 						</div>
 						<div className='w-full'>
 							{showQuests ? <Quests quests={selectedCharacter.quests} /> : null}
+							{showRecentActivities ? (
+								<RecentActivities activities={selectedCharacter.activities} />
+							) : null}
 						</div>
 					</div>
 				</div>
