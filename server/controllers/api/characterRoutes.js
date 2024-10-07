@@ -47,13 +47,16 @@ function questURL(username) {
 }
 
 // profile route
-router.get('/profile/:username', withAuth, async (req, res) => {
+router.get('/profile/:username', async (req, res) => {
+    console.log('profile route hit')
     try {
         const lowerUsername = req.params.username.toLowerCase();
+        console.log(lowerUsername)
         const dbResponse = await Character.findOne({
             where: { lowername: lowerUsername }
         })
-        if (!dbResponse) {
+        console.log(dbResponse)
+        if (!dbResponse || dbResponse === null) {
             const response = await fetch(profileURL(lowerUsername), {
                 method: 'GET',
                 headers: {
@@ -70,12 +73,11 @@ router.get('/profile/:username', withAuth, async (req, res) => {
             const lowerName = profile.name.toLowerCase();
 
             const qData = await getQuests(lowerUsername);
-            const quests = await qData.json()
-            const createChar = await Character.create({ ...profile, lowername: lowerName, quests: quests })
-
-            res.json(profile)
+            const createChar = await Character.create({ ...profile, lowername: lowerName, quests: qData })
+            console.log(createChar)
+            res.status(200).json(profile)
         } else {
-            res.json(dbResponse)
+            res.status(200).json(dbResponse)
         }
 
     } catch (err) {

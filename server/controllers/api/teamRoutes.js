@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { Character, Team } = require('../../models');
+const { Character, Team, User } = require('../../models');
 const withAuth = require('../../utils/auth');
 const { runemetrics, hiscores, miscellaneous } = require('runescape-api');
 const fetch = require('node-fetch')
@@ -169,8 +169,43 @@ router.post('/allQuests', withAuth, async (req, res) => {
 router.post('/createTeam', async (req, res) => {
     try {
         const teamName = req.body.teamName;
-        const response = await Team.create({ teamName })
+        const response = await Team.create({ teamName, user_id: req.body.userId })
+        console.log(req.body.userId)
+        const userResponse = await User.update({ team_id: response.dataValues.id }, {
+            where: { id: req.body.userId }
+        })
         res.json(response)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err)
+    }
+})
+
+router.get('/getTeams', async (req, res) => {
+    try {
+        const response = await Team.findAll({
+            where: { user_id: 1 }
+        })
+        const teams = response.map((team) => team.dataValues.teamName)
+        console.log(teams)
+        res.json(teams)
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err)
+    }
+})
+
+router.get('/getTeamMembers/:teamName', async (req, res) => {
+    try {
+        console.log(res.teamName)
+        const team = await Team.findOne({
+            where: { teamName: req.params.teamName }
+        })
+        const response = await Character.findAll({
+            where: { team_id: team.dataValues.id }
+        })
+        const teamMembers = response.map((member) => member.dataValues)
+        res.json(teamMembers)
     } catch (err) {
         console.log(err);
         res.status(500).json(err)
