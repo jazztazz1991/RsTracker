@@ -31,7 +31,11 @@ const Profile = () => {
 	}, [characters]);
 	const getCharacters = async (username) => {
 		try {
-			const response = await instance.get(`/api/characters/${username}`);
+			const response = await instance.get(`/api/characters/${username}`, {
+				headers: {
+					token: cookies.token,
+				},
+			});
 			console.log(response.data);
 			if (response.data.length !== 0) {
 				setCharacters(response.data);

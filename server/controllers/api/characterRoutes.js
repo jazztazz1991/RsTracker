@@ -47,7 +47,7 @@ function questURL(username) {
 }
 
 // profile route
-router.get('/profile/:username', async (req, res) => {
+router.get('/profile/:username', withAuth, async (req, res) => {
     console.log('profile route hit')
     try {
         const lowerUsername = req.params.username.toLowerCase();
@@ -253,14 +253,18 @@ router.post('/addAccount', async (req, res) => {
     }
 });
 
-router.get('/:username', async (req, res) => {
+router.get('/:username', withAuth, async (req, res) => {
+    console.log('get characters route hit')
     try {
+        console.log(req.params.username)
         const userData = await User.findOne({
             where: { username: req.params.username },
         });
+        console.log(userData)
         const dbResponse = await Character.findAll({
             where: { user_id: userData.dataValues.id }
         })
+        console.log(dbResponse)
         if (!dbResponse) {
             res.status(404).json({ message: 'No characters found' })
         } else {

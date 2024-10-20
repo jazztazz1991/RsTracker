@@ -35,8 +35,8 @@ const Login = () => {
 			if (password && username) {
 				const response = await instance.post('/api/users/login', user);
 				console.log(response);
-				setCookie('user', response.data.userData, { path: '/', maxAge: 3600 });
-				setCookie('token', response.data.token, { path: '/', maxAge: 3600 });
+				setCookie('user', response.data.user, { path: '/', maxAge: 60000 });
+				setCookie('token', response.data.token, { path: '/', maxAge: 60000 });
 				navigate('/');
 			} else {
 				setError('Please fill out all fields');
