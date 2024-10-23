@@ -33,7 +33,7 @@ const Register = () => {
 			if (password === confirmPassword) {
 				const response = await instance.post('/api/users/register', user);
 				console.log(response);
-				setCookie('user', response.data.userData, { path: '/', maxAge: 3600 });
+				setCookie('user', response.data.user, { path: '/', maxAge: 3600 });
 				setCookie('token', response.data.token, { path: '/', maxAge: 3600 });
 				navigate('/');
 			} else {
